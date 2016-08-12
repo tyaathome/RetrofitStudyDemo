@@ -25,7 +25,7 @@ public class AppService {
     private GankService mGankService = null;
 
     public AppService() {
-
+        init();
     }
 
     public static AppService getInstance() {
@@ -33,6 +33,15 @@ public class AppService {
             instance = new AppService();
         }
         return instance;
+    }
+
+    private void init() {
+        if(mRetrofit == null) {
+            create();
+        }
+        if(mGankService == null) {
+            mGankService = mRetrofit.create(GankService.class);
+        }
     }
 
     public Retrofit create() {
@@ -51,12 +60,7 @@ public class AppService {
      * @param onNext 数据请求完成回调
      */
     public void startRequest(final Context context, BaseRequest request, final OnCompleted onNext) {
-        if(mRetrofit == null) {
-            create();
-        }
-        if(mGankService == null) {
-            mGankService = mRetrofit.create(GankService.class);
-        }
+        init();
         mGankService.getData(request)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
